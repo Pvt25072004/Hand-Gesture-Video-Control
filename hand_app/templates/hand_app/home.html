@@ -1,0 +1,50 @@
+{% extends "hand_app\base.html" %} {% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  {% block title %} Home {% endblock %}
+</head>
+<body>
+  {% block home %}
+    <section>
+      <h2><i class="bi bi-filetype-doc"></i> Giới thiệu</h2>
+      <p>
+        Ứng dụng điều khiển video bằng cử chỉ tay sử dụng webcam, kết hợp OpenCV và MediaPipe. 
+        Điều khiển video (phát, dừng, tăng/giảm âm lượng) bằng cử chỉ mượt mà và trực quan.
+      </p>
+    </section>
+    <section class="mb-5">
+      <h2><i class="bi bi-tools"></i> Hướng dẫn sử dụng</h2>
+      <p>
+        Hãy mở camera lên <i class="bi bi-camera"></i>, hiện tại là video mặc định bạn có thể chọn video trong kho của bạn <i class="bi bi-box2"></i>.
+      </p>
+      <div class="container overflow-hidden text-center">
+        <div class="row gx-5">
+          <div class="col">
+            <div class="p-3">Play or Pause video</div>
+            <p>
+              <img src="/static/image/hand-play.png"width="50" height="50">
+              Hãy mở cả bản tay để play video.
+            </p>
+            <p>
+              <img src="/static/image/hand-pause.png"width="50" height="50">
+              Hãy nắm cả bản tay để pause video.
+            </p>
+          </div>
+          <div class="col">
+            <div class="p-3">Increase or Decrease volume</div>
+            <p>
+              <img src="/static/image/increase.png"width="50" height="50">
+              Hãy kéo dãn khoảng cách ngón cái và ngón trỏ để tăng âm lượng video.
+            </p>
+            <p>
+              <img src="/static/image/decrease.png"width="50" height="50">
+              Hãy thu gọn khoảng cách ngón cái và ngón trỏ để giảm âm lượng video.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  {% endblock %}
+</body>
+</html>

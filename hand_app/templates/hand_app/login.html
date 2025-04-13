@@ -1,0 +1,23 @@
+{% extends "hand_app\base.html" %} {% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  {% block title %} Login {% endblock %}
+</head>
+<body>
+  {% block login %}
+  <div class="form-container">
+    <h2>Đăng nhập</h2>
+    <form>
+      <input type="email" placeholder="Email" required>
+      <input type="password" placeholder="Mật khẩu" required>
+      <a href="{% url 'index' %}" class="btn btn-primary">Đăng nhập</a>
+      <div class="display-flex justify-content-between">
+        <a href="{% url 'home' %}"><i class="bi bi-arrow-return-left"></i> Quay lại trang chủ</a>
+        <a href="{% url 'register' %}"><i class="bi bi-arrow-return-right"></i> Chưa có tài khoản</a>
+      </div>
+    </form>
+  </div>
+  {% endblock %}
+</body>
+</html>

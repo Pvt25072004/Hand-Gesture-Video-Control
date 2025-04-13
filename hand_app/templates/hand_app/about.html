@@ -1,0 +1,54 @@
+{% extends "hand_app\base.html" %} {% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  {% block title %} About me {% endblock %}
+</head>
+<body>
+    {% block about %}
+    <div class="container mt-5 mb-5">
+        <div class="row">
+        <!-- Thông tin cá nhân -->
+            <div class="col-md-4">
+                <div class="card">
+                    <img src="/static/image/personal.jpg"class="card-img-top" alt="Ảnh cá nhân">
+                    <div class="card-body">
+                        <h5 class="card-title">Pham Van Tien</h5>
+                        <p class="card-text">A software engineer with a passion for technology and software development. 
+                            My interests include programming, learning AI, and researching new technologies.
+                        </p>
+                        <p><strong>Email:</strong> tpha768@gmail.com</p>
+                        <p><strong>Phone number:</strong> 0339668760</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Các dự án -->
+            <div class="col-md-8">
+                <h3>My projects</h3>
+                <ul class="list-group">
+                <li class="list-group-item">
+                    <h5><a href="https://github.com/Pvt25072004/Bookshop" target="_blank">Project 1: Bookshop</a></h5>
+                    <p>Book management application with features like add, delete, edit book information and shopping cart built with Django.
+                    </p>
+                </li>
+                <li class="list-group-item">
+                    <h5><a href="https://github.com/Pvt25072004/-N-CU-I-K-REACTJS" target="_blank">Project 2: Jewelry Shop</a></h5>
+                    <p>Site management application with features like adding, deleting, editing book information and shopping cart built with ReactJS.
+                    </p>
+                </li>
+                <li class="list-group-item">
+                    <h5><a href="https://github.com/duong-dan-toi-du-an-3" target="_blank">Project current: Hand Gesture Video Control Web</a></h5>
+                    <p>Hand gesture video control system. User can select video, open and close operation and increase or decrease volume.
+                    </p>
+                </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thêm Bootstrap JS từ CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    {% endblock %}
+</body>
+</html>
