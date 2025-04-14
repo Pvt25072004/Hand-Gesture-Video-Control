@@ -36,13 +36,13 @@
     }
 
     .video-container {
-      width: 40%; /* Giảm kích thước video */
+      width: 40%;
       position: relative;
       max-width: 640px;
     }
 
     #video {
-      display: none; /* Camera hidden by default */
+      display: none;
       width: 100%;
       height: auto;
       border-radius: 8px;
@@ -71,6 +71,12 @@
     #startCam {
       background-color: #28a745;
       color: white;
+      transition: all ease .3s;
+    }
+
+    #startCam:hover {
+      background-color:#28a746;
+      color: white;
     }
 
     #stopCam {
@@ -94,7 +100,7 @@
     }
 
     .video-player-container {
-      width: 40%; /* Giảm kích thước video */
+      width: 40%;
       max-width: 640px;
     }
 
@@ -104,12 +110,11 @@
       align-items: center;
       margin-top: 20px;
     }
-    /* Ẩn thẻ input file gốc */
+
     .file-input {
       display: none;
     }
 
-    /* Tùy chỉnh giao diện cho label */
     .custom-file-upload {
       cursor: pointer;
       display: inline-block;
@@ -124,19 +129,69 @@
     .custom-file-upload:hover {
       background-color: #0056b3;
     }
+
+    .status {
+      font-family: 'Courier New', monospace;
+      font-size: 1.2rem;
+      color: #555;
+      border-right: 2px solid #555;
+      white-space: nowrap;
+      overflow: hidden;
+      width: 0;
+      animation: typing 3s steps(30, end) forwards, blink 0.75s step-end infinite;
+      margin: 20px;
+    }
+
+    @keyframes typing {
+      from { width: 0 }
+      to { width: 600px; }
+    }
+
+    @keyframes blink {
+      50% { border-color: transparent; }
+    }
+
+    #canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      border-radius: 8px;
+    }
+
+    .landmark {
+      position: absolute;
+      border-radius: 50%;
+      width: 8px;
+      height: 8px;
+      background-color: red;
+      transition: all 0.3s ease;
+    }
+
+    .landmark:hover {
+      background-color: #ffcc00;
+      transform: scale(1.5);
+    }
+
+    video:fullscreen,
+    .video-player-container:fullscreen {
+      width: 100vw !important;
+      height: 100vh !important;
+      object-fit: contain;
+      background-color: black;
+    }
   </style>
 </head>
 <body>
 
-  <h2>🎥 Điều khiển video bằng cử chỉ tay</h2>
+  <h2>🎥 Hand Gesture Video Control</h2>
 
-  <!-- Chọn video -->
   <div class="file-upload-container">
     <input type="file" id="fileInput" class="file-input" accept="video/*">
     <label for="fileInput" class="custom-file-upload btn btn-primary">
       <i class="bi bi-camera-reels"></i> Chọn video
     </label>
-    <a href="{% url 'home' %}" class="btn btn-primary"><i class="bi bi-arrow-return-left"></i> Quay lại trang giới thiệu</a>
+    <a href="{% url 'home' %}" class="btn btn-primary"><i class="bi bi-arrow-return-left"></i> Quay lại trang chủ</a>
   </div>
 
   <div class="controls">
@@ -145,152 +200,159 @@
   </div>
 
   <div class="container">
-    <!-- Video player -->
     <div class="video-player-container">
       <video id="player" controls width="100%">
         <source id="videoSource" src="/static/video/sample.mp4" type="video/mp4">
         Trình duyệt không hỗ trợ video.
       </video>
     </div>
-
-    <!-- Camera -->
     <div class="video-container camera-container">
       <video id="video" autoplay muted width="100%"></video>
     </div>
   </div>
 
   <p id="status" class="status">Đang chờ bật camera...</p>
-
+  <div id="infoDisplay" style="position:absolute; top:10px; right:10px; color:white; font-weight:bold; background:rgba(0,0,0,0.5); padding:6px 10px; border-radius:8px;">
+    🕒 0:00 / 0:00 | 🔊 100%
+  </div>
+  <canvas id="canvas" width="640" height="480"></canvas>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
 
-<script>
-  const player = document.getElementById('player');
-  const videoEl = document.getElementById('video');
-  const statusText = document.getElementById('status');
-  const startBtn = document.getElementById('startCam');
-  const stopBtn = document.getElementById('stopCam');
-  const videoInput = document.getElementById('fileInput');
-  const videoSource = document.getElementById('videoSource');
+  <script>
+    const player = document.getElementById('player');
+    const videoEl = document.getElementById('video');
+    const statusText = document.getElementById('status');
+    const startBtn = document.getElementById('startCam');
+    const stopBtn = document.getElementById('stopCam');
+    const videoInput = document.getElementById('fileInput');
+    const videoSource = document.getElementById('videoSource');
+    let handsActive = false;
+    let camera = null;
+    let lastAction = 0;
 
-  let handsActive = false;
-  let camera = null;
-  let lastAction = 0;
-
-  // Load video từ máy người dùng
-  videoInput.onchange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      videoSource.src = url;
-      player.load();
-    }
-  };
-
-  // Khởi tạo MediaPipe
-  const hands = new Hands({
-    locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
-  });
-
-  hands.setOptions({
-    maxNumHands: 1,
-    modelComplexity: 1,
-    minDetectionConfidence: 0.7,
-    minTrackingConfidence: 0.7
-  });
-
-  hands.onResults(results => {
-    if (!handsActive) return;
-
-    if (results.multiHandLandmarks.length > 0) {
-      const hand = results.multiHandLandmarks[0];
-      const tips = [8, 12, 16, 20];
-      let extendedFingers = 0;
-
-      tips.forEach(i => {
-        if (hand[i].y < hand[i - 2].y) extendedFingers++;
-      });
-
-      const now = Date.now();
-      if (now - lastAction > 2000) {
-        if (extendedFingers === 4) {
-          player.play();
-          statusText.innerText = "▶️ Đang phát video (mở tay)";
-          statusText.style.color = "green";
-          lastAction = now;
-        } else if (extendedFingers === 0) {
-          player.pause();
-          statusText.innerText = "⏸ Đã tạm dừng (nắm tay)";
-          statusText.style.color = "red";
-          lastAction = now;
-        }
+    videoInput.onchange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const url = URL.createObjectURL(file);
+        videoSource.src = url;
+        player.load();
       }
+    };
 
-      // 🔊 Điều chỉnh âm lượng bằng khoảng cách giữa ngón cái (4) và ngón trỏ (8)
-      const thumb = hand[4];
-      const index = hand[8];
+    setInterval(() => {
+      if (!isNaN(player.duration)) {
+        const current = player.currentTime;
+        const duration = player.duration;
+        const formatTime = (t) => `${Math.floor(t / 60)}:${Math.floor(t % 60).toString().padStart(2, '0')}`;
+        const volumePercent = Math.round(player.volume * 100);
+        document.getElementById('infoDisplay').innerText = `🕒 ${formatTime(current)} / ${formatTime(duration)} | 🔊 ${volumePercent}%`;
+      }
+    }, 500);
 
-      const dx = index.x - thumb.x;
-      const dy = index.y - thumb.y;
-      const distance = Math.sqrt(dx * dx + dy * dy);
-
-      // Chuẩn hóa và giới hạn khoảng cách hợp lý
-      const minDist = 0.05;
-      const maxDist = 0.3;
-      const normalized = Math.max(0, Math.min(1, (distance - minDist) / (maxDist - minDist)));
-
-      player.volume = normalized;
-      statusText.innerText = `🔊 Âm lượng: ${(normalized * 100).toFixed(0)}% (kéo 2 ngón tay)`;
-      statusText.style.color = "blue";
+    function drawLandmarks(landmarks) {
+      const canvas = document.getElementById('canvas');
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (!landmarks) return;
+      landmarks.forEach((point) => {
+        const x = point.x * canvas.width;
+        const y = point.y * canvas.height;
+        ctx.beginPath(); ctx.arc(x, y, 5, 0, 2 * Math.PI); ctx.fillStyle = 'red'; ctx.fill();
+      });
     }
-  });
 
-  startBtn.onclick = () => {
-    videoEl.style.display = "block";
-    startBtn.style.display = "none";
-    stopBtn.style.display = "inline-block";
-    handsActive = true;
-    statusText.innerText = "📷 Đang nhận diện tay...";
+    function enterFullscreen(element) {
+      if (element.requestFullscreen) element.requestFullscreen();
+      else if (element.webkitRequestFullscreen) element.webkitRequestFullscreen();
+      else if (element.msRequestFullscreen) element.msRequestFullscreen();
+    }
 
-    camera = new Camera(videoEl, {
-      onFrame: async () => {
-        await hands.send({ image: videoEl });
-      },
-      width: 480,
-      height: 360
+    function exitFullscreen() {
+      if (document.exitFullscreen) document.exitFullscreen();
+      else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      else if (document.msExitFullscreen) document.msExitFullscreen();
+    }
+
+    const hands = new Hands({ locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}` });
+    hands.setOptions({ maxNumHands: 1, modelComplexity: 1, minDetectionConfidence: 0.7, minTrackingConfidence: 0.7 });
+
+    hands.onResults(results => {
+      if (!handsActive) return;
+      if (results.multiHandLandmarks.length > 0) {
+        const hand = results.multiHandLandmarks[0];
+        drawLandmarks(hand);
+        const tips = [8, 12, 16, 20];  // Ngón tay: 8 - ngón trỏ, 12 - ngón giữa, 16 - ngón áp út, 20 - ngón út
+        let extendedFingers = tips.reduce((acc, i) => acc + (hand[i].y < hand[i - 2].y ? 1 : 0), 0);
+    
+        const now = Date.now();
+        if (now - lastAction > 2000) {
+          if (extendedFingers === 4) { 
+            player.play();
+            statusText.innerText = "▶️ Đang phát video (mở tay)";
+            statusText.style.color = "green"; 
+            lastAction = now;
+          }
+          else if (extendedFingers === 0) { 
+            player.pause();
+            statusText.innerText = "⏸ Đã tạm dừng (nắm tay)";
+            statusText.style.color = "red"; 
+            lastAction = now; 
+          }
+          // Bật full màn hình khi có 2 ngón (ngón trỏ và ngón giữa)
+          else if (extendedFingers === 2) { 
+            enterFullscreen(document.querySelector('.video-player-container'));
+            statusText.innerText = "🖥 Bật full màn hình (2 ngón)";
+            statusText.style.color = "blue"; 
+            lastAction = now;
+          }
+          // Thoát full màn hình khi có 3 ngón
+          else if (extendedFingers === 3) { 
+            exitFullscreen();
+            statusText.innerText = "❌ Thoát full màn hình (3 ngón)";
+            statusText.style.color = "orange"; 
+            lastAction = now;
+          }
+        }
+    
+        const thumb = hand[4];
+        const index = hand[8];
+        const distance = Math.hypot(index.x - thumb.x, index.y - thumb.y);
+        const normalized = Math.max(0, Math.min(1, (distance - 0.05) / (0.3 - 0.05)));
+        player.volume = normalized;
+      } else {
+        drawLandmarks(null);
+      }
     });
-    camera.start();
-  };
+    
 
-  stopBtn.onclick = () => {
-    handsActive = false;
-    videoEl.style.display = "none";
-    stopBtn.style.display = "none";
-    startBtn.style.display = "inline-block";
-    statusText.innerText = "🛑 Camera đã tắt";
-    if (camera) camera.stop();
-  };
+    startBtn.onclick = () => {
+      videoEl.style.display = "block";
+      startBtn.style.display = "none";
+      stopBtn.style.display = "inline-block";
+      handsActive = true;
+      statusText.innerText = "📷 Đang nhận diện tay...";
+      camera = new Camera(videoEl, {
+        onFrame: async () => await hands.send({ image: videoEl }),
+        width: 480, height: 360
+      });
+      camera.start();
+    };
 
-  // Kéo camera bằng chuột
-  let isDragging = false;
-  let offsetX, offsetY;
+    stopBtn.onclick = () => {
+      handsActive = false;
+      videoEl.style.display = "none";
+      stopBtn.style.display = "none";
+      startBtn.style.display = "inline-block";
+      statusText.innerText = "🛑 Camera đã tắt";
+      if (camera) camera.stop();
+    };
 
-  videoEl.onmousedown = (e) => {
-    isDragging = true;
-    offsetX = e.clientX - videoEl.offsetLeft;
-    offsetY = e.clientY - videoEl.offsetTop;
-  };
-
-  document.onmousemove = (e) => {
-    if (isDragging) {
-      videoEl.style.left = `${e.clientX - offsetX}px`;
-      videoEl.style.top = `${e.clientY - offsetY}px`;
-    }
-  };
-
-  document.onmouseup = () => {
-    isDragging = false;
-  };
-</script>
+    let isDragging = false;
+    let offsetX, offsetY;
+    videoEl.onmousedown = (e) => { isDragging = true; offsetX = e.clientX - videoEl.offsetLeft; offsetY = e.clientY - videoEl.offsetTop; };
+    document.onmousemove = (e) => { if (isDragging) { videoEl.style.left = `${e.clientX - offsetX}px`; videoEl.style.top = `${e.clientY - offsetY}px`; } };
+    document.onmouseup = () => { isDragging = false; };
+  </script>
 </body>
 </html>

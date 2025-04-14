@@ -14,118 +14,150 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}Web{% endblock %}</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: #f4f4f4;
-        }
+  <style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background: #f4f4f4;
+    }
 
-        header {
-            background: #333;
-            color: #fff;
-            padding: 20px;
-            text-align: center;
-        }
+    header {
+        background: #333;
+        color: #fff;
+        padding: 20px;
+        text-align: center;
+    }
 
-        nav {
-            background: #444;
-            padding: 10px;
-            text-align: center;
-        }
+    nav {
+        background: #444;
+        padding: 10px;
+        text-align: center;
+    }
 
-        nav a {
-            color: white;
-            margin: 0 15px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: all 0.3s ease; /* đúng thứ tự: thuộc tính thời gian kiểu */
-        }
-        
-        nav > a:hover {
-            color: rgb(255, 94, 0);
-            transform: translateY(-5px);
-        }
-        
-        nav > a:focus {
-            color:rgb(255, 145, 0);
-        }
-        nav > a:active {
-            color:rgb(255, 0, 0);
-        }
+    nav a {
+        color: white;
+        margin: 0 15px;
+        text-decoration: none;
+        font-weight: bold;
+        transition: all 0.3s ease; /* đúng thứ tự: thuộc tính thời gian kiểu */
+    }
+    
+    nav > a:hover {
+        color: rgb(255, 94, 0);
+        transform: translateY(-5px);
+    }
+    
+    nav > a:focus {
+        color:rgb(255, 145, 0);
+    }
+    nav > a:active {
+        color:rgb(255, 0, 0);
+    }
 
-        section {
-            padding: 40px 20px;
-            max-width: 800px;
-            margin: auto;
-            background: white;
-            margin-top: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
+    section {
+        padding: 40px 20px;
+        max-width: 800px;
+        margin: auto;
+        background: white;
+        margin-top: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
 
-        h2 {
-            text-align: center;
-            color: #333;
-        }
+    h2 {
+        text-align: center;
+        color: #333;
+    }
 
-        p {
-            text-align: center;
-            font-size: 16px;
-            color: #555;
-        }
+    p {
+        text-align: center;
+        font-size: 16px;
+        color: #555;
+    }
 
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            max-width: 400px;
-            margin: auto;
-        }
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        max-width: 400px;
+        margin: auto;
+    }
 
-        input[type="text"],
-        input[type="email"],
-        input[type="password"] {
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
 
-        button {
-            padding: 10px;
-            background-color: #007bff;
-            border: none;
-            color: white;
-            font-weight: bold;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
+    button {
+        padding: 10px;
+        background-color: #007bff;
+        border: none;
+        color: white;
+        font-weight: bold;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
 
-        button:hover {
-            background-color: #0056b3;
-        }
-        footer {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background-color: #333;
-            text-align: center;
-            padding: 12px 0;
-            font-size: 14px;
-            border-top: 2px solid #444;
-            z-index: 1000;
-        }
-        footer > p{
-            color:rgb(192, 192, 192);
-        }
-    </style>
+    button:hover {
+        background-color: #0056b3;
+    }
+    .user-info {
+        display: inline-flex;
+        align-items: center;
+        background-color: #ffffff;
+        padding: 8px 20px;
+        border-radius: 25px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        color: #4CAF50;
+        font-size: 18px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .user-info:hover {
+        background-color: #f4f4f4;
+        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.15);
+        transform: scale(1.05); /* Thêm hiệu ứng phóng to nhẹ khi hover */
+    }
+    
+    .user-info i {
+        font-size: 24px;
+        margin-right: 12px; /* Khoảng cách giữa biểu tượng và tên */
+        color: #4CAF50; /* Màu biểu tượng đồng bộ với màu của phần tử */
+    }
+    
+    .user-info .username {
+        font-size: 20px;
+        font-weight: 500;
+        color: #333;
+    }
+
+    footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background-color: #333;
+        text-align: center;
+        padding: 12px 0;
+        font-size: 14px;
+        border-top: 2px solid #444;
+        z-index: 1000;
+    }
+
+    footer > p {
+        color:rgb(192, 192, 192);
+    }
+  </style>
 </head>
 <body>
   <header>
-      <img src="/static/image/logo2.png"width="100" height="100">
+      <img src="/static/image/logo2.png" width="100" height="100">
       <h1>Hand Gesture Video Control Web</h1>
   </header>
 
@@ -134,16 +166,23 @@
     <a href="{% url 'login' %}"><i class="bi bi-box-arrow-in-right"></i> Login</a>
     <a href="{% url 'register' %}"><i class="bi bi-person-add"></i> Register</a>
     <a href="{% url 'about' %}"><i class="bi bi-info-square"></i> About</a>
+
+    {% if request.user.is_authenticated %}
+        <a href="{% url 'index' %}"><i class="bi bi-file-earmark-slides-fill"></i> Test</a>
+        <a href="{% url 'logout' %}"><i class="bi bi-box-arrow-right"></i> Logout</a>
+        <span class="user-info">👋 Welcome, <strong>{{ request.user.username }}</strong></span>
+    {% endif %}
+
   </nav>
 
-    {% block home %}{% endblock %}
-    {% block about %}{% endblock %}
-    {% block register %}{% endblock %}
-    {% block login %}{% endblock %}
+  {% block home %}{% endblock %}
+  {% block about %}{% endblock %}
+  {% block register %}{% endblock %}
+  {% block login %}{% endblock %}
   
-    <footer>
-        <p>&copy; 2025 Hand Gesture Video Control Web | Designed by <a href="https://www.facebook.com/tien.pham.603670">Tien Pham</a></p>
-    </footer>
+  <footer>
+    <p>&copy; 2025 Hand Gesture Video Control Web | Designed by <a href="https://www.facebook.com/tien.pham.603670">Tien Pham</a></p>
+  </footer>
     
 </body>
 </html>

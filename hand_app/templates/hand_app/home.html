@@ -4,19 +4,24 @@
 <head>
   {% block title %} Home {% endblock %}
 </head>
+<style>
+    .bi-filetype-doc{
+      color: orange;
+    }
+</style>
 <body>
   {% block home %}
     <section>
-      <h2><i class="bi bi-filetype-doc"></i> Giới thiệu</h2>
+      <h2><i class="bi bi-filetype-doc text-primary"></i> Giới thiệu</h2>
       <p>
         Ứng dụng điều khiển video bằng cử chỉ tay sử dụng webcam, kết hợp OpenCV và MediaPipe. 
         Điều khiển video (phát, dừng, tăng/giảm âm lượng) bằng cử chỉ mượt mà và trực quan.
       </p>
     </section>
     <section class="mb-5">
-      <h2><i class="bi bi-tools"></i> Hướng dẫn sử dụng</h2>
+      <h2><i class="bi bi-tools text-danger-emphasis"></i> Hướng dẫn sử dụng</h2>
       <p>
-        Hãy mở camera lên <i class="bi bi-camera"></i>, hiện tại là video mặc định bạn có thể chọn video trong kho của bạn <i class="bi bi-box2"></i>.
+        Hãy mở camera lên <i class="bi bi-camera text-info"></i>, hiện tại là video mặc định bạn có thể chọn video trong kho của bạn <i class="bi bi-box2 text-danger"></i>.
       </p>
       <div class="container overflow-hidden text-center">
         <div class="row gx-5">
